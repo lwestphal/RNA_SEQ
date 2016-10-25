@@ -1,6 +1,6 @@
 #edgeR dps RNA_seq data analysis
 
-setwd('~/Desktop/Lacey/DATA/RNA_seq')
+setwd('~/path/to/RNA_seq')
 library('edgeR')
 
 counts <- read.delim('all_conditions_counts.txt', sep='\t', header=T, stringsAsFactors=F)
@@ -12,10 +12,10 @@ WT41       1 22112058            1
 WT42       1 63861448            1
 WT241      2 20198850            1
 WT242      2 18840134            1
-dps41      3 17323345            1
-dps42      3 17323345            1
-dps241     4 21237032            1
-dps242     4 20819735            1
+d41      3 17323345            1
+d42      3 17323345            1
+d241     4 21237032            1
+d242     4 20819735            1
 
 #lib.size is a sum of all counts from one sample
 
@@ -24,22 +24,9 @@ dps242     4 20819735            1
 keep <- rowSums(cpm(y)>1) >=2
 y <- y[keep, ,keep.lib.sizes=F]
 
-#this gets rid of 310 genes
-
-y$samples
-       group lib.size norm.factors
-WT41       1 22110580            1
-WT42       1 63857984            1
-WT241      2 20196368            1
-WT242      2 18838618            1
-dps41      3 17322376            1
-dps42      3 17322376            1
-dps241     4 21235530            1
-dps242     4 20818081            1
-
 #pairwise comparisons
 
-#test for DE between 4hr WT and 4hr dps:
+#test for DE between 4hr WT and 4hr d:
 
 et <- exactTest(y, pair=c("1","3"))
 topTags(et)
@@ -63,7 +50,7 @@ length(comp4_sig$logFC)
 #[1] 1574
 
 
-#test for DE between 24hr WT and 24hr dps:
+#test for DE between 24hr WT and 24hr d:
 et24 <- exactTest(y, pair=c("2","4"))
 topTags(et)
 Comparison of groups:  4-2 
@@ -84,7 +71,7 @@ comp24_sig <- comp24[comp24$PValue < 0.05,]
 length(comp24_sig$logFC)
 #[1] 1889
 
-plot(comp24$logFC, pch=20, xlab='genes with p-value < 0.05', ylab= 'log2 fold change', main='DE between 24hr WT and 24hr dps')
+plot(comp24$logFC, pch=20, xlab='genes with p-value < 0.05', ylab= 'log2 fold change', main='DE between 24hr WT and 24hr d')
 abline(h = 2, col='red', lty=2)
 abline(h = -2, col='red', lty=2)
 abline(h = -1, col='red', lty=2)
@@ -116,46 +103,19 @@ compwt$index <- (1:length(compwt$logFC))
 plot(compwt_all$index, compwt_all$logFC, col='black', xlab='gene index', ylab='log2FC', main='all DE genes')
 >  points(comp24_all$index, comp24_all$logFC, col='blue')
 >  points(comp4_all$index, comp4_all$logFC, col='red')
-> legend('bottom', horiz=T, legend=c('dps 4 v wt 4', 'dps 24 v wt 24', 'wt 4 vs wt 24'), col=c('red', 'blue', 'black'), pch=1)
-> 
-12 for 4 hours dps and 27 for 24hrs dps
-
-
-
-is.odd <- function(x) {
-	if (x % 2 = 0) {
-		x <- FALSE
-		return(x)}
-}
-
-
-
-mysummary <- function(x,npar=TRUE,print=TRUE) {
-  if (!npar) {
-    center <- mean(x); spread <- sd(x) 
-  } else {
-    center <- median(x); spread <- mad(x) 
-  }
-  if (print & !npar) {
-    cat("Mean=", center, "\n", "SD=", spread, "\n")
-  } else if (print & npar) {
-    cat("Median=", center, "\n", "MAD=", spread, "\n")
-  }
-  result <- list(center=center,spread=spread)
-  return(result)
-}
+> legend('bottom', horiz=T, legend=c('d 4 v wt 4', 'd 24 v wt 24', 'wt 4 vs wt 24'), col=c('red', 'blue', 'black'), pch=1)
 
 comp4_all_nonint <- comp4_all[!row.names(comp4_all) %in% wt4_inter,]
 
 ## plot along chromosome counts
 
-counts4dps1 <- read.delim('~/Desktop/4dps1_counts.txt', header=F, stringsAsFactors=F, sep=',', col.names = c('index', 'gene', 'counts', 'ref'))
+counts4d1 <- read.delim('~/Desktop/4d1_counts.txt', header=F, stringsAsFactors=F, sep=',', col.names = c('index', 'gene', 'counts', 'ref'))
 
-counts4dps2 <- read.delim('~/Desktop/4dps2_counts.txt', header=F, stringsAsFactors=F, sep=',', col.names = c('index', 'gene', 'counts', 'ref'))
+counts4d2 <- read.delim('~/Desktop/4d2_counts.txt', header=F, stringsAsFactors=F, sep=',', col.names = c('index', 'gene', 'counts', 'ref'))
 
-counts24dps1 <- read.delim('~/Desktop/24dps1_counts.txt', header=F, stringsAsFactors=F, sep=',', col.names = c('index', 'gene', 'counts', 'ref'))
+counts24d1 <- read.delim('~/Desktop/24d1_counts.txt', header=F, stringsAsFactors=F, sep=',', col.names = c('index', 'gene', 'counts', 'ref'))
 
-counts24dps2 <- read.delim('~/Desktop/24dps2_counts.txt', header=F, stringsAsFactors=F, sep=',', col.names = c('index', 'gene', 'counts', 'ref'))
+counts24d2 <- read.delim('~/Desktop/24d2_counts.txt', header=F, stringsAsFactors=F, sep=',', col.names = c('index', 'gene', 'counts', 'ref'))
 
 counts4WT1 <- read.delim('~/Desktop/4WT1_counts.txt', header=F, stringsAsFactors=F, sep=',', col.names = c('index', 'gene', 'counts', 'ref'))
 
@@ -167,90 +127,90 @@ counts24WT2 <- read.delim('~/Desktop/24WT2_counts.txt', header=F, stringsAsFacto
 
 layout(matrix(1:4))
 
-plot(counts4dps1$ref, counts4dps1$counts, pch=20, main='4 dps 1', xlab='reference position', ylab='counts', ylim=c(0,500000), type='h')
-plot(counts4dps2$ref, counts4dps2$counts, pch=20, main='4 dps 2', xlab='reference position', ylab='counts', ylim=c(0,500000), type='h')
-plot(counts24dps1$ref, counts24dps1$counts, pch=20, main='24 dps 1', xlab='reference position', ylab='counts', ylim=c(0,500000), type='h')
-plot(counts24dps2$ref, counts24dps2$counts, pch=20, main='24 dps 2', xlab='reference position', ylab='counts', ylim=c(0,500000), type='h')
+plot(counts4d1$ref, counts4d1$counts, pch=20, main='4 d 1', xlab='reference position', ylab='counts', ylim=c(0,500000), type='h')
+plot(counts4d2$ref, counts4d2$counts, pch=20, main='4 d 2', xlab='reference position', ylab='counts', ylim=c(0,500000), type='h')
+plot(counts24d1$ref, counts24d1$counts, pch=20, main='24 d 1', xlab='reference position', ylab='counts', ylim=c(0,500000), type='h')
+plot(counts24d2$ref, counts24d2$counts, pch=20, main='24 d 2', xlab='reference position', ylab='counts', ylim=c(0,500000), type='h')
 
 plot(counts4WT1$ref, counts4WT1$counts, pch=20, main='4 WT 1', xlab='reference position', ylab='counts')
 plot(counts4WT2$ref, counts4WT2$counts, pch=20, main='4 WT 2', xlab='reference position', ylab='counts' )
-plot(counts24WT1$ref, counts24dps1$counts, pch=20, main='24 WT 1', xlab='reference position', ylab='counts')
-plot(counts24WT2$ref, counts24dps2$counts, pch=20, main='24 WT 2', xlab='reference position', ylab='counts')
+plot(counts24WT1$ref, counts24d1$counts, pch=20, main='24 WT 1', xlab='reference position', ylab='counts')
+plot(counts24WT2$ref, counts24d2$counts, pch=20, main='24 WT 2', xlab='reference position', ylab='counts')
 
 
 ## # reads per sample ###
-sum4dps1 <- sum(counts4dps1$counts)
-sum4dps2 <- sum(counts4dps2$counts)
-sum24dps1 <- sum(counts24dps1$counts)
-sum24dps2 <- sum(counts24dps2$counts)
+sum4d1 <- sum(counts4d1$counts)
+sum4d2 <- sum(counts4d2$counts)
+sum24d1 <- sum(counts24d1$counts)
+sum24d2 <- sum(counts24d2$counts)
 sum4WT1 <- sum(counts4WT1$counts)
 sum4WT2 <- sum(counts4WT2$counts)
 sum24WT1 <- sum(counts24WT1$counts)
 sum24WT2 <- sum(counts24WT2$counts)
 
 
-sample <- c('4dps1', '4dps2', '24dps1', '24dps2', '4WT1', '4WT2', '24WT1', '24WT2')
-sums <- c(sum4dps1, sum4dps2, sum24dps1, sum24dps2, sum4WT1, sum4WT2, sum24WT1, sum24WT2)
+sample <- c('4d1', '4dp2', '24d1', '24d2', '4WT1', '4WT2', '24WT1', '24WT2')
+sums <- c(sum4d1, sum4d2, sum24d1, sum24d2, sum4WT1, sum4WT2, sum24WT1, sum24WT2)
 barplot(sums, names.arg=sample, main='# of reads per sample', col='salmon')
 
 (848830, 849333
-## dps changes between dps and WT at 4 hours ##
+## d changes between d and WT at 4 hours ##
 
 
 
-dps <- c(counts4dps1$counts[counts4dps1$gene == 'dps']/sum4dps1,
-counts4dps2$counts[counts4dps2$gene == 'dps']/sum4dps2,
-counts24dps2$counts[counts24dps2$gene == 'dps']/sum24dps2,
-counts24dps1$counts[counts24dps1$gene == 'dps']/sum24dps1,
-counts24WT1$counts[counts24WT1$gene == 'dps']/sum24WT1,
-counts24WT2$counts[counts24WT2$gene == 'dps']/sum24WT2,
-counts4WT2$counts[counts4WT2$gene == 'dps']/sum4WT2,
-counts4WT1$counts[counts4WT1$gene == 'dps']/sum4WT1)
-barplot(dps, names.arg=c('4dps1', '4dps2', '24dps2', '24dps1', '24WT1','24WT2', '4WT2','4WT1'), main='dps counts / normalized', col='salmon')
+d <- c(counts4d1$counts[counts4d1$gene == 'd']/sum4d1,
+counts4d2$counts[counts4d2$gene == 'd']/sum4d2,
+counts24d2$counts[counts24d2$gene == 'd']/sum24d2,
+counts24d1$counts[counts24d1$gene == 'd']/sum24d1,
+counts24WT1$counts[counts24WT1$gene == 'd']/sum24WT1,
+counts24WT2$counts[counts24WT2$gene == 'd']/sum24WT2,
+counts4WT2$counts[counts4WT2$gene == 'd']/sum4WT2,
+counts4WT1$counts[counts4WT1$gene == 'd']/sum4WT1)
+barplot(d, names.arg=c('4d1', '4d2', '24d2', '24d1', '24WT1','24WT2', '4WT2','4WT1'), main='d counts / normalized', col='salmon')
 
-## allD changes between dps and WT at 4 hours ##
+## allD changes between d and WT at 4 hours ##
 
-allD <- c(counts4dps1$counts[counts4dps1$gene == 'allD']/sum4dps1,
-counts4dps2$counts[counts4dps2$gene == 'allD']/sum4dps2,
-counts24dps2$counts[counts24dps2$gene == 'allD']/sum24dps2,
-counts24dps1$counts[counts24dps1$gene == 'allD']/sum24dps1,
+allD <- c(counts4d1$counts[counts4d1$gene == 'allD']/sum4d1,
+counts4d2$counts[counts4d2$gene == 'allD']/sum4d2,
+counts24d2$counts[counts24d2$gene == 'allD']/sum24d2,
+counts24d1$counts[counts24d1$gene == 'allD']/sum24d1,
 counts24WT1$counts[counts24WT1$gene == 'allD']/sum24WT1,
 counts24WT2$counts[counts24WT2$gene == 'allD']/sum24WT2,
 counts4WT2$counts[counts4WT2$gene == 'allD']/sum4WT2,
 counts4WT1$counts[counts4WT1$gene == 'allD']/sum4WT1)
-barplot(dps, names.arg=c('4dps1', '4dps2', '24dps2', '24dps1', '24WT1','24WT2', '4WT2','4WT1'), main='allD counts / normalized', col='salmon')
+barplot(d, names.arg=c('4d1', '4d2', '24d2', '24d1', '24WT1','24WT2', '4WT2','4WT1'), main='allD counts / normalized', col='salmon')
 
-barplot(counts4dps1$counts, main='4 dps 1', xlab='reference position', ylab='counts', xlim=c(848000, 850000), ylim=c(0,500000))
+barplot(counts4d1$counts, main='4 d 1', xlab='reference position', ylab='counts', xlim=c(848000, 850000), ylim=c(0,500000))
 
-barplot(counts4dps2$ref, counts4dps2$counts, pch=20, main='4 dps 2', xlab='reference position', ylab='counts', ylim=c(0,500000), xlim=c(848000, 850000),type='h')
+barplot(counts4d2$ref, counts4d2$counts, pch=20, main='4 d 2', xlab='reference position', ylab='counts', ylim=c(0,500000), xlim=c(848000, 850000),type='h')
 
 barplot(counts4WT1$ref, counts4WT1$counts, xlim=c(848000, 850000),pch=20, main='4 WT 1', xlab='reference position', ylab='counts')
 barplot(counts4WT2$ref, counts4WT2$counts, xlim=c(848000, 850000),pch=20, main='4 WT 2', xlab='reference position', ylab='counts' )
 
-sapply(WT_dps4$gene, function(x) {barplot(as.matrix(counts[row.names(counts) == x,][9:16]), main='normalized counts of dps', ylab='normalized counts', col='salmon')})
+sapply(WT_d4$gene, function(x) {barplot(as.matrix(counts[row.names(counts) == x,][9:16]), main='normalized counts of dps', ylab='normalized counts', col='salmon')})
 
 
-#operons for 4hour dps/WT to check out
+#operons for 4hour d/WT to check out
 
 astABCDE, allDB, iscAS, fliTA, puuABCDEP
 
-#operons for 24hr dps/WT 
+#operons for 24hr d/WT 
 
 cysHIJ, gadABC, hdeABD, tnaAC, uxuAB, tdcAR, ompFT, fimIZ,yddAB, ydeMQ, ydeST,ydjNJ,
 yheBD, ygcKW, yjfIK, yqeCJ
 
 
 
-dps_424 <- read.csv("~/Desktop/Lacey/DATA/RNA_seq/dps_4_24_exactTest_withref.txt", stringsAsFactors=F, header=T)
+d_424 <- read.csv("~/Desktop/Lacey/DATA/RNA_seq/d_4_24_exactTest_withref.txt", stringsAsFactors=F, header=T)
 WT_424 <- read.csv("~/Desktop/Lacey/DATA/RNA_seq/WT_4_24_exactTest_withref.txt", stringsAsFactors=F, header=T)
 
 
-> both_intersect (4 hours with 4/24 dps and WT)
+> both_intersect (4 hours with 4/24 d and WT)
  [1] "astA" "astB" "astC" "astD" "cspI" "entC" "fadB" "hisL" "hscB" "iscA" "iscS" "iscU" "puuA"
 [14] "puuD" "ribB" "ycdM" "ydcI" "yigF" "yjiC" "ymfA" "allB" "cadA" "cydB" "garK" "gudD" "hypA"
 [27] "phoA" "puuB" "puuC" "puuE" "tnaC" "yaiB" "ybbV" "ybgT"
-> both_intersect <- intersect(time_intersect, WT_dps24$gene)
-> both_intersect (24 hours with 4/24 dps and WT)
+> both_intersect <- intersect(time_intersect, WT_d24$gene)
+> both_intersect (24 hours with 4/24 d and WT)
  [1] "cysI" "cysJ" "gntP" "proV" "uxuA" "uxuB" "ydcI" "ydeT" "yebV" "ygaR" "ygeF" "ylaC" "ynfM"
 [14] "aphA" "blr"  "cbrC" "gadA" "gadB" "gadC" "hdeA" "hdeB" "hdeD" "hmp"  "malE" "malT" "mcrB"
 [27] "ompT" "oppB" "paaB" "putA" "rbsB" "spr"  "srlA" "tdcA" "tnaA" "tnaC" "yaiB" "ybaJ" "ybbW"
@@ -269,5 +229,5 @@ df <- sapply(steve, function(x) {
      })
 dev.off()	 
 steve <- c("rpoN" ,"rpoD" ,"rpoS", "rpoH", "rpoN" ,"rpoE" ,"bfr",  "ftn" , "oxyR" ,"fecA" ,"fis" , "hns",  "hupA", "hupB", 
-	  "ihfA" ,"ihfB" ,"fepE", 'fur', 'dps')
+	  "ihfA" ,"ihfB" ,"fepE", 'fur', 'd')
 
