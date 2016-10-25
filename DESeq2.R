@@ -1,7 +1,8 @@
 ## DESeq2 Analysis
+## requires R package 'DESeq2', and a counts table
+## in this case, I used HT-seq to generate counts based on 'gene' features
 
-
-setwd("~/Desktop/Lacey/DATA/RNA_seq")
+setwd("~/path/to/RNA_seq/files")
 library('DESeq2')
 all_counts <- read.delim("all_conditions_raw_counts.txt", sep='\t', header=T)
 all_counts <- all_counts[!row.names(all_counts) == 'dps',] #remove dps
