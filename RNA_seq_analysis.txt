@@ -56,33 +56,21 @@ Ex: user$ cat file1.fastq file2.fastq > file_both.fastq
 EX:
 
 > samples
-       LibraryName LibraryLayout                                                       fastq condition shortname
-1   4WT1_ALL    75bpSINGLE   /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/4WT1_ALL.fastq   exp_WT1      4WT1
-2   4WT2_ALL    75bpSINGLE   /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/4WT2_ALL.fastq   exp_WT2      4WT2
-3  24WT1_ALL   75bpSINGLE  /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/24WT1_ALL.fastq    sp_WT1     24WT1
-4  24WT2_ALL    75bpSINGLE  /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/24WT2_ALL.fastq    sp_WT2     24WT2
-5  4dps1_ALL    75bpSINGLE  /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/4dps1_ALL.fastq  exp_dps1     4dps1
-6  4dps2_ALL   75bpSINGLE  /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/4dps1_ALL.fastq  exp_dps2     4dps2
-7 24dps1_ALL    75bpSINGLE /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/24dps1_ALL.fastq   sp_dps1    24dps1
-8 24dps2_ALL   75bpSINGLE /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/24dps2_ALL.fastq   sp_dps2    24dps2
+       LibraryName LibraryLayout fastq condition shortname
+1   4WT1_ALL    75bpSINGLE   /path/to/4WT1_ALL.fastq   exp_WT1      4WT1
+2   4WT2_ALL    75bpSINGLE   /path/to/RNA_seq/4WT2_ALL.fastq   exp_WT2      4WT2
+3  24WT1_ALL   75bpSINGLE  /path/to/RNA_seq/24WT1_ALL.fastq    sp_WT1     24WT1
+4  24WT2_ALL    75bpSINGLE  /path/to/RNA_seq/24WT2_ALL.fastq    sp_WT2     24WT2
+5  4d1_ALL    75bpSINGLE  /path/to/RNA_seq/4d1_ALL.fastq  exp_d1     4d1
+6  4d2_ALL   75bpSINGLE  /path/to/RNA_seq/4d1_ALL.fastq  exp_d2     4d2
+7 24d1_ALL    75bpSINGLE /path/to/RNA_seq/24d1_ALL.fastq   sp_d1    24d1
+8 24d2_ALL   75bpSINGLE /path/to/RNA_seq/24d2_ALL.fastq   sp_d2    24d2
 
 
-4. Use R to create the terminal commands for Tophat so that you don't have to do it manually
-> gf = 'W3110.gtf'
-> bowind = 'W3110'
-> cmd = with(samples, paste('tophat2 -G', gf, '-p 5 -o', LibraryName, bowind, fastq))
-tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3  -p 5 -o 4dps2_allnew ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/4dps2_allnew.fastq
-> cmd
-tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3 -p 5 -o 4WT1_ALL ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/4WT1_ALL.fastq    
-tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3 -p 5 -o 4WT2_ALL ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/4WT2_ALL.fastq    
-tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3 -p 5 -o 24WT1_ALL ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/24WT1_ALL.fastq  
-tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3 -p 5 -o 24WT2_ALL ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/24WT2_ALL.fastq  
-tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3 -p 5 -o 4dps1_ALL ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/4dps1_allnew.fastq  
-tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3 -p 5 -o 24dps1_ALL ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/24dps1_ALL.fastq
-tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3 -p 5 -o 24dps2_ALL ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/24dps2_ALL.fastq
 
-tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3 -p 5 -o 4dps2_ALL ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/4dps2_allnew.fastq" 
-5. Build an index with bowtie (only need to do once) of ref genome
+4. Align RNA reads to reference genome with bowtie2
+ 
+ Build an index with bowtie (only need to do once) of ref genome
 
  user$ bowtie2-build ZK126_2014.fasta W3110 de novo
  
@@ -94,7 +82,24 @@ tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_
 
 bowtie2-inspect --names your_index
 
-tophat2 -G W3110.gtf -p 5 -o 4WT1_ALL_W3110 W3110 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/4WT1_ALL.fastq
+
+
+5. Use R to create the terminal commands for Tophat so that you don't have to do it manually
+> gf = 'W3110.gtf'
+> bowind = 'W3110'
+> cmd = with(samples, paste('tophat2 -G', gf, '-p 5 -o', LibraryName, bowind, fastq))
+tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3  -p 5 -o 4dps2_allnew ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/4d2_allnew.fastq
+> cmd
+tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3 -p 5 -o 4WT1_ALL ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/4WT1_ALL.fastq    
+tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3 -p 5 -o 4WT2_ALL ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/4WT2_ALL.fastq    
+tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3 -p 5 -o 24WT1_ALL ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/24WT1_ALL.fastq  
+tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3 -p 5 -o 24WT2_ALL ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/24WT2_ALL.fastq  
+tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3 -p 5 -o 4d1_ALL ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/4d1_allnew.fastq  
+tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3 -p 5 -o 24d1_ALL ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/24d1_ALL.fastq
+tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3 -p 5 -o 24d2_ALL ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/24d2_ALL.fastq
+
+tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3 -p 5 -o 4d2_ALL ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/4d2_allnew.fastq" 
+## Don't run these commands yet, need to align reads to a reference first
 
 6. copy and paste tophat2 commands into terminal. This will create a folder for each sample with a 
 file called 'accepted_hits.bam'
@@ -142,27 +147,27 @@ samtools view -o 24WT2_ALL_sn.sam 24WT2_ALL_sn.bam
 samtools sort 24WT2_ALL/accepted_hits.bam -o 24WT2_ALL_s.bam  
 samtools index 24WT2_ALL_s.bam 
 
-samtools sort -n 4dps1_ALL/accepted_hits.bam -o 4dps1_ALL_sn.bam 
-samtools view -o 4dps1_ALL_sn.sam 4dps1_ALL_sn.bam 
-samtools sort 4dps1_ALL/accepted_hits.bam -o 4dps1_ALL_s.bam  
-samtools index 4dps1_ALL_s.bam 
+samtools sort -n 4d1_ALL/accepted_hits.bam -o 4d1_ALL_sn.bam 
+samtools view -o 4d1_ALL_sn.sam 4d1_ALL_sn.bam 
+samtools sort 4d1_ALL/accepted_hits.bam -o 4d1_ALL_s.bam  
+samtools index 4d1_ALL_s.bam 
 
-samtools sort -n 4dps2_allnew/accepted_hits.bam -o 4dps2_ALL_sn.bam 
-samtools view -o 4dps2_allnew_sn.sam 4dps2_ALL_sn.bam 
-samtools sort 4dps2_allnew/accepted_hits.bam -o 4dps2_ALL_s.bam  
-samtools index 4dps2_ALL_s.bam 
+samtools sort -n 4d2_allnew/accepted_hits.bam -o 4d2_ALL_sn.bam 
+samtools view -o 4d2_allnew_sn.sam 4d2_ALL_sn.bam 
+samtools sort 4d2_allnew/accepted_hits.bam -o 4d2_ALL_s.bam  
+samtools index 4d2_ALL_s.bam 
 
-samtools sort -n 24dps1_ALL/accepted_hits.bam -o 24dps1_ALL_sn.bam 
-samtools view -o 24dps1_ALL_sn.sam 24dps1_ALL_sn.bam 
-samtools sort 24dps1_ALL/accepted_hits.bam -o 24dps1_ALL_s.bam  
-samtools index 24dps1_ALL_s.bam 
+samtools sort -n 24d1_ALL/accepted_hits.bam -o 24d1_ALL_sn.bam 
+samtools view -o 24d1_ALL_sn.sam 24d1_ALL_sn.bam 
+samtools sort 24d1_ALL/accepted_hits.bam -o 24d1_ALL_s.bam  
+samtools index 24d1_ALL_s.bam 
 
-samtools sort -n 24dps2_ALL/accepted_hits.bam -o 24dps2_ALL_sn.bam 
-samtools view -o 24dps2_ALL_sn.sam 24dps2_ALL_sn.bam 
-samtools sort 24dps2_ALL/accepted_hits.bam -o 24dps2_ALL_s.bam  
-samtools index 24dps2_ALL_s.bam 
+samtools sort -n 24d2_ALL/accepted_hits.bam -o 24d2_ALL_sn.bam 
+samtools view -o 24d2_ALL_sn.sam 24d2_ALL_sn.bam 
+samtools sort 24d2_ALL/accepted_hits.bam -o 24d2_ALL_s.bam  
+samtools index 24d2_ALL_s.bam 
 
-8. Use R to write command lines:
+8. Use R to write command lines for HT-seq (which will count reads within designated feature):
 
 samples$countf = paste(samples$LibraryName, "count", sep=".")
  gf = "W3110.gtf"
@@ -175,47 +180,46 @@ htseq-count -s no -a 10 --type=CDS --idattr=gene 4WT1_ALL_sn.sam W3110.gtf > 4WT
 htseq-count -s no -a 10 4WT2_ALL_sn.sam W3110.gtf > 4WT2_ALL.count   
 htseq-count -s no -a 10 24WT1_ALL_sn.sam W3110.gtf > 24WT1_ALL.count
 htseq-count -s no -a 10 24WT2_ALL_sn.sam W3110.gtf > 24WT2_ALL.count  
-htseq-count -s no -a 10 4dps1_ALL_sn.sam W3110.gtf > 4dps1_ALL.count   
-htseq-count -s no -a 10 24dps1_ALL_sn.sam W3110.gtf > 24dps1_ALL.count
-htseq-count -s no -a 10 24dps2_ALL_sn.sam W3110.gtf > 24dps2_ALL.count
+htseq-count -s no -a 10 4d1_ALL_sn.sam W3110.gtf > 4d1_ALL.count   
+htseq-count -s no -a 10 24d1_ALL_sn.sam W3110.gtf > 24d1_ALL.count
+htseq-count -s no -a 10 24d2_ALL_sn.sam W3110.gtf > 24d2_ALL.count
 
 
-htseq-count -s no -a 10 4dps2_allnew_sn.sam W3110.gtf > 4dps2_allnew.count 
+htseq-count -s no -a 10 4d2_allnew_sn.sam W3110.gtf > 4d2_allnew.count 
 
-9. DESeq2 stuff
+9. DESeq2 in R for differential expression analysis
 
-shortname <- c('4WT1', '4WT2', '4dps1', '4dps2', '24WT1', '24WT2', '24dps1', '24dps2')
+shortname <- c('4WT1', '4WT2', '4dps1', '4dps2', '24WT1', '24WT2', '24d1', '24d2')
 timepoint <- c('4','4','4','4','24','24','24','24')
-condition <- c('WT','WT','dps','dps','WT','WT','dps', 'dps')
+condition <- c('WT','WT','d','d','WT','WT','d', 'd')
 
 
 sampleFiles <- paste(shortname, '_ALL', sep='')
 sampleFiles <- paste(sampleFiles, 'count', sep='.')
 
 
-
-http://www.rna-seqblog.com/rpkm-fpkm-and-tpm-clearly-explained/
-
-
 OR USE RSUBREAD!
 
 buildindex('W3110', 'W3110.fasta')
-align('W3110', ‘4dps2_allnew.fastq’)
-align('W3110', ‘4dps1_ALL.fastq’)
-align('W3110', ‘24dps1_ALL.fastq’)
-align('W3110', ‘24dps2_ALL.fastq’)
+align('W3110', ‘4d2_allnew.fastq’)
+align('W3110', ‘4d1_ALL.fastq’)
+align('W3110', ‘24d1_ALL.fastq’)
+align('W3110', ‘24d2_ALL.fastq’)
 align('W3110', ‘4WT1_ALL.fastq’)
 align('W3110', ‘4WT2_ALL.fastq’)
 align('W3110', ‘24WT1_ALL.fastq’)
 align('W3110', ‘24WT2_ALL.fastq’)
-dps41 <- featureCounts('4dps1_ALL.fastq.subread.BAM', annot.ext='W3110.gtf', isGTFAnnotationFile=TRUE)
-dps42 <- featureCounts('4dps2_allnew.fastq.subread.BAM', annot.ext='W3110.gtf', isGTFAnnotationFile=TRUE)
-dps241 <- featureCounts(‘24dps1_ALL.fastq.subread.BAM', annot.ext='W3110.gtf', isGTFAnnotationFile=TRUE)
-dps242 <- featureCounts(‘24dps2_ALL.fastq.subread.BAM', annot.ext='W3110.gtf', isGTFAnnotationFile=TRUE)
+d41 <- featureCounts('4d1_ALL.fastq.subread.BAM', annot.ext='W3110.gtf', isGTFAnnotationFile=TRUE)
+d42 <- featureCounts('4d2_allnew.fastq.subread.BAM', annot.ext='W3110.gtf', isGTFAnnotationFile=TRUE)
+d241 <- featureCounts(‘24d1_ALL.fastq.subread.BAM', annot.ext='W3110.gtf', isGTFAnnotationFile=TRUE)
+d242 <- featureCounts(‘24d2_ALL.fastq.subread.BAM', annot.ext='W3110.gtf', isGTFAnnotationFile=TRUE)
 WT41 <- featureCounts('4WT1_ALL.fastq.subread.BAM', annot.ext='W3110.gtf', isGTFAnnotationFile=TRUE)
 WT42 <- featureCounts('4WT2_ALL.fastq.subread.BAM', annot.ext='W3110.gtf', isGTFAnnotationFile=TRUE)
 WT241 <- featureCounts(‘24WT1_ALL.fastq.subread.BAM', annot.ext='W3110.gtf', isGTFAnnotationFile=TRUE)
 WT242 <- featureCounts(‘24WT2_ALL.fastq.subread.BAM', annot.ext='W3110.gtf', isGTFAnnotationFile=TRUE)
 
 
-all_counts <- data.frame(dps41 = dps41$counts, dps42 = dps42$counts, dps241 = dps241$counts, dps242 = dps242$counts, WT41 = WT41$counts, WT42 = WT42$counts, WT241 = WT241$counts, WT242 = WT242$counts)
+all_counts <- data.frame(d41 = d41$counts, d42 = d42$counts, d241 = d241$counts, d242 = d242$counts, WT41 = WT41$counts, WT42 = WT42$counts, WT241 = WT241$counts, WT242 = WT242$counts)
+
+# helpful reference:
+http://www.rna-seqblog.com/rpkm-fpkm-and-tpm-clearly-explained/
