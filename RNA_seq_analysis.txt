@@ -1,0 +1,221 @@
+RNA-Seq pipeline. LW 8/30/16
+
+NATURE PROTOCOLS | PROTOCOL
+Count-based differential expression analysis of RNA sequencing data using R and Bioconductor
+Simon Anders,	Davis J McCarthy,	Yunshun Chen,	Michal Okoniewski,	Gordon K Smyth, Wolfgang Huber	& Mark D Robinson
+
+Software versions.
+
+Bowtie2 
+/Users/lwestpha/anaconda/bin/bowtie2-align-s version 2.2.8
+64-bit
+Built on lab7-osx-vm.local
+Wed Apr  6 08:48:01 CDT 2016
+Compiler: Thread model: posix
+Options:  -arch x86_64  -m64 -march=core2 -mfpmath=sse -mmmx -msse -msse2 -msse3 -mssse3 -msse4 -msse4.1 -msse4.2 -mpopcnt -O3 -stdlib=libstdc++ -DPOPCNT_CAPABILITY
+Sizeof {int, long, long long, void*, size_t, off_t}: {4, 8, 8, 8, 8, 8}
+
+Tophat
+TopHat v2.1.0
+
+Samtools
+samtools 1.3
+Using htslib 1.3
+Copyright (C) 2015 Genome Research Ltd.
+
+R
+platform       x86_64-apple-darwin13.4.0   
+arch           x86_64                      
+os             darwin13.4.0                
+system         x86_64, darwin13.4.0        
+status                                     
+major          3                           
+minor          3.1                         
+year           2016                        
+month          06                          
+day            21                          
+svn rev        70800                       
+language       R                           
+version.string R version 3.3.1 (2016-06-21)
+nickname       Bug in Your Hair    
+
+1. Download fastq files and concatenate samples.
+
+Ex: user$ cat file1.fastq file2.fastq > file_both.fastq
+
+2. Print out a report on quality of fastq using ShortRead library in R
+
+> fqQC <- qa(dirPath='.', pattern='.fastq$', type='fastq') #for this to work, you want to make sure your fastq files are all in the directory of R (and no other fastqs)
+> report(fqQC, type='html', dest='fastQAreport')
+
+#file will be located within a folder called fastQAreport in path, index.html will give you a summary
+
+
+3. Create a conditions or samples table that describes the dataset and the names of each sample. 
+
+EX:
+
+> samples
+       LibraryName LibraryLayout                                                       fastq condition shortname
+1   4WT1_ALL    75bpSINGLE   /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/4WT1_ALL.fastq   exp_WT1      4WT1
+2   4WT2_ALL    75bpSINGLE   /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/4WT2_ALL.fastq   exp_WT2      4WT2
+3  24WT1_ALL   75bpSINGLE  /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/24WT1_ALL.fastq    sp_WT1     24WT1
+4  24WT2_ALL    75bpSINGLE  /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/24WT2_ALL.fastq    sp_WT2     24WT2
+5  4dps1_ALL    75bpSINGLE  /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/4dps1_ALL.fastq  exp_dps1     4dps1
+6  4dps2_ALL   75bpSINGLE  /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/4dps1_ALL.fastq  exp_dps2     4dps2
+7 24dps1_ALL    75bpSINGLE /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/24dps1_ALL.fastq   sp_dps1    24dps1
+8 24dps2_ALL   75bpSINGLE /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/24dps2_ALL.fastq   sp_dps2    24dps2
+
+
+4. Use R to create the terminal commands for Tophat so that you don't have to do it manually
+> gf = 'W3110.gtf'
+> bowind = 'W3110'
+> cmd = with(samples, paste('tophat2 -G', gf, '-p 5 -o', LibraryName, bowind, fastq))
+tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3  -p 5 -o 4dps2_allnew ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/4dps2_allnew.fastq
+> cmd
+tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3 -p 5 -o 4WT1_ALL ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/4WT1_ALL.fastq    
+tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3 -p 5 -o 4WT2_ALL ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/4WT2_ALL.fastq    
+tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3 -p 5 -o 24WT1_ALL ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/24WT1_ALL.fastq  
+tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3 -p 5 -o 24WT2_ALL ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/24WT2_ALL.fastq  
+tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3 -p 5 -o 4dps1_ALL ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/4dps1_allnew.fastq  
+tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3 -p 5 -o 24dps1_ALL ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/24dps1_ALL.fastq
+tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3 -p 5 -o 24dps2_ALL ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/24dps2_ALL.fastq
+
+tophat2 -G /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/Escherichia_coli_str_k_12_substr_w3110.ASM1024v1.32.gff3 -p 5 -o 4dps2_ALL ASM1024v1 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/4dps2_allnew.fastq" 
+5. Build an index with bowtie (only need to do once) of ref genome
+
+ user$ bowtie2-build ZK126_2014.fasta W3110 de novo
+ 
+ Please note that the values in the first column of the provided GTF/GFF file (column 
+ which indicates the chromosome or contig on which the feature is located), must match 
+ the name of the reference sequence in the Bowtie index you are using with TopHat. You 
+ can get a list of the sequence names in a Bowtie index by typing:
+
+
+bowtie2-inspect --names your_index
+
+tophat2 -G W3110.gtf -p 5 -o 4WT1_ALL_W3110 W3110 /Users/lwestpha/Desktop/Lacey/DATA/RNA_seq/4WT1_ALL.fastq
+
+6. copy and paste tophat2 commands into terminal. This will create a folder for each sample with a 
+file called 'accepted_hits.bam'
+
+7. Sort, index, and create SAM files. First, use R to write the command line text.
+
+for(i in seq_len(nrow(samples))) {
+
+ lib = samples$LibraryName[i]
+
+ ob = file.path(lib, "accepted_hits.bam")
+
+ # sort by name, convert to SAM for htseq-count
+
+ cat(paste0("samtools sort -n ",ob," ",lib,"_sn"),"\n")
+
+ cat(paste0("samtools view -o ",lib,"_sn.sam ",lib,"_sn.bam"),"\n")
+
+ # sort by position and index for IGV
+
+ cat(paste0("samtools sort ",ob," ",lib,"_s"),"\n")
+
+ cat(paste0("samtools index ",lib,"_s.bam"),"\n\n")
+
+}
+
+Gives:
+samtools sort -n 4WT1_ALL/accepted_hits.bam -o 4WT1_ALL_sn.bam 
+samtools view -o 4WT1_ALL_sn.sam 4WT1_ALL_sn.bam 
+samtools sort 4WT1_ALL/accepted_hits.bam -o 4WT1_ALL_s.bam  
+samtools index 4WT1_ALL_s.bam 
+
+samtools sort -n 4WT2_ALL/accepted_hits.bam -o 4WT2_ALL_sn.bam 
+samtools view -o 4WT2_ALL_sn.sam 4WT2_ALL_sn.bam 
+samtools sort 4WT2_ALL/accepted_hits.bam -o 4WT2_ALL_s.bam  
+samtools index 4WT2_ALL_s.bam 
+
+samtools sort -n 24WT1_ALL/accepted_hits.bam -o 24WT1_ALL_sn.bam 
+samtools view -o 24WT1_ALL_sn.sam 24WT1_ALL_sn.bam 
+samtools sort 24WT1_ALL/accepted_hits.bam -o 24WT1_ALL_s.bam  
+samtools index 24WT1_ALL_s.bam 
+
+samtools sort -n 24WT2_ALL/accepted_hits.bam -o 24WT2_ALL_sn.bam 
+samtools view -o 24WT2_ALL_sn.sam 24WT2_ALL_sn.bam 
+samtools sort 24WT2_ALL/accepted_hits.bam -o 24WT2_ALL_s.bam  
+samtools index 24WT2_ALL_s.bam 
+
+samtools sort -n 4dps1_ALL/accepted_hits.bam -o 4dps1_ALL_sn.bam 
+samtools view -o 4dps1_ALL_sn.sam 4dps1_ALL_sn.bam 
+samtools sort 4dps1_ALL/accepted_hits.bam -o 4dps1_ALL_s.bam  
+samtools index 4dps1_ALL_s.bam 
+
+samtools sort -n 4dps2_allnew/accepted_hits.bam -o 4dps2_ALL_sn.bam 
+samtools view -o 4dps2_allnew_sn.sam 4dps2_ALL_sn.bam 
+samtools sort 4dps2_allnew/accepted_hits.bam -o 4dps2_ALL_s.bam  
+samtools index 4dps2_ALL_s.bam 
+
+samtools sort -n 24dps1_ALL/accepted_hits.bam -o 24dps1_ALL_sn.bam 
+samtools view -o 24dps1_ALL_sn.sam 24dps1_ALL_sn.bam 
+samtools sort 24dps1_ALL/accepted_hits.bam -o 24dps1_ALL_s.bam  
+samtools index 24dps1_ALL_s.bam 
+
+samtools sort -n 24dps2_ALL/accepted_hits.bam -o 24dps2_ALL_sn.bam 
+samtools view -o 24dps2_ALL_sn.sam 24dps2_ALL_sn.bam 
+samtools sort 24dps2_ALL/accepted_hits.bam -o 24dps2_ALL_s.bam  
+samtools index 24dps2_ALL_s.bam 
+
+8. Use R to write command lines:
+
+samples$countf = paste(samples$LibraryName, "count", sep=".")
+ gf = "W3110.gtf"
+> cmd = paste0("htseq-count -s no -a 10 ", samples$LibraryName,
++ "_sn.sam ", gf," > ", samples$countf)
+> 
+>  cmd
+
+htseq-count -s no -a 10 --type=CDS --idattr=gene 4WT1_ALL_sn.sam W3110.gtf > 4WT1_ALL.count    
+htseq-count -s no -a 10 4WT2_ALL_sn.sam W3110.gtf > 4WT2_ALL.count   
+htseq-count -s no -a 10 24WT1_ALL_sn.sam W3110.gtf > 24WT1_ALL.count
+htseq-count -s no -a 10 24WT2_ALL_sn.sam W3110.gtf > 24WT2_ALL.count  
+htseq-count -s no -a 10 4dps1_ALL_sn.sam W3110.gtf > 4dps1_ALL.count   
+htseq-count -s no -a 10 24dps1_ALL_sn.sam W3110.gtf > 24dps1_ALL.count
+htseq-count -s no -a 10 24dps2_ALL_sn.sam W3110.gtf > 24dps2_ALL.count
+
+
+htseq-count -s no -a 10 4dps2_allnew_sn.sam W3110.gtf > 4dps2_allnew.count 
+
+9. DESeq2 stuff
+
+shortname <- c('4WT1', '4WT2', '4dps1', '4dps2', '24WT1', '24WT2', '24dps1', '24dps2')
+timepoint <- c('4','4','4','4','24','24','24','24')
+condition <- c('WT','WT','dps','dps','WT','WT','dps', 'dps')
+
+
+sampleFiles <- paste(shortname, '_ALL', sep='')
+sampleFiles <- paste(sampleFiles, 'count', sep='.')
+
+
+
+http://www.rna-seqblog.com/rpkm-fpkm-and-tpm-clearly-explained/
+
+
+OR USE RSUBREAD!
+
+buildindex('W3110', 'W3110.fasta')
+align('W3110', ‘4dps2_allnew.fastq’)
+align('W3110', ‘4dps1_ALL.fastq’)
+align('W3110', ‘24dps1_ALL.fastq’)
+align('W3110', ‘24dps2_ALL.fastq’)
+align('W3110', ‘4WT1_ALL.fastq’)
+align('W3110', ‘4WT2_ALL.fastq’)
+align('W3110', ‘24WT1_ALL.fastq’)
+align('W3110', ‘24WT2_ALL.fastq’)
+dps41 <- featureCounts('4dps1_ALL.fastq.subread.BAM', annot.ext='W3110.gtf', isGTFAnnotationFile=TRUE)
+dps42 <- featureCounts('4dps2_allnew.fastq.subread.BAM', annot.ext='W3110.gtf', isGTFAnnotationFile=TRUE)
+dps241 <- featureCounts(‘24dps1_ALL.fastq.subread.BAM', annot.ext='W3110.gtf', isGTFAnnotationFile=TRUE)
+dps242 <- featureCounts(‘24dps2_ALL.fastq.subread.BAM', annot.ext='W3110.gtf', isGTFAnnotationFile=TRUE)
+WT41 <- featureCounts('4WT1_ALL.fastq.subread.BAM', annot.ext='W3110.gtf', isGTFAnnotationFile=TRUE)
+WT42 <- featureCounts('4WT2_ALL.fastq.subread.BAM', annot.ext='W3110.gtf', isGTFAnnotationFile=TRUE)
+WT241 <- featureCounts(‘24WT1_ALL.fastq.subread.BAM', annot.ext='W3110.gtf', isGTFAnnotationFile=TRUE)
+WT242 <- featureCounts(‘24WT2_ALL.fastq.subread.BAM', annot.ext='W3110.gtf', isGTFAnnotationFile=TRUE)
+
+
+all_counts <- data.frame(dps41 = dps41$counts, dps42 = dps42$counts, dps241 = dps241$counts, dps242 = dps242$counts, WT41 = WT41$counts, WT42 = WT42$counts, WT241 = WT241$counts, WT242 = WT242$counts)
